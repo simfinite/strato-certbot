@@ -1,0 +1,23 @@
+[project]
+name = "strato_certbot"
+readme = "README.md"
+version = "0.1"
+
+description = "Wildcard certificates for strato.de"
+
+dependencies = [
+  "beautifulsoup4",
+  "pyotp",
+  "requests",
+]
+
+[project.scripts]
+strato-auth-hook = "strato_certbot.auth_hook:main"
+strato-cleanup-hook = "strato_certbot.cleanup_hook:main"
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools"]
+
+[tool.setuptools]
+packages = ["strato_certbot"]

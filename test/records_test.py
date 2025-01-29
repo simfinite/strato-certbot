@@ -2,13 +2,13 @@ import os
 
 import pytest
 
-from certbotstratoapi import CertbotStratoApi
+from strato_certbot.certbotstratoapi import CertbotStratoApi
 
 
 @pytest.fixture(autouse=True)
 def setup_env_vars():
-    os.environ['CERTBOT_DOMAIN'] = 'example.com'
-    os.environ['CERTBOT_VALIDATION'] = 'xyz'
+    os.environ["CERTBOT_DOMAIN"] = "example.com"
+    os.environ["CERTBOT_VALIDATION"] = "xyz"
 
 
 def test_records_are_empty_at_begin():
@@ -20,12 +20,12 @@ def test_records_are_empty_at_begin():
 def test_add_record():
     strato = CertbotStratoApi()
 
-    strato.add_txt_record('subdomain', 'TXT', 'myvalue')
+    strato.add_txt_record("subdomain", "TXT", "myvalue")
 
     assert len(strato.records) == 1
-    assert strato.records[0]['prefix'] == 'subdomain'
-    assert strato.records[0]['type'] == 'TXT'
-    assert strato.records[0]['value'] == 'myvalue'
+    assert strato.records[0]["prefix"] == "subdomain"
+    assert strato.records[0]["type"] == "TXT"
+    assert strato.records[0]["value"] == "myvalue"
 
 
 def test_set_acme_record():
@@ -34,16 +34,16 @@ def test_set_acme_record():
     strato.set_amce_record()
 
     assert len(strato.records) == 1
-    assert strato.records[0]['prefix'] == '_acme-challenge'
-    assert strato.records[0]['type'] == 'TXT'
-    assert strato.records[0]['value'] == 'xyz'
+    assert strato.records[0]["prefix"] == "_acme-challenge"
+    assert strato.records[0]["type"] == "TXT"
+    assert strato.records[0]["value"] == "xyz"
 
 
 def test_remove_record():
     strato = CertbotStratoApi()
 
-    strato.add_txt_record('subdomain', 'TXT', 'myvalue')
-    strato.remove_txt_record('subdomain', 'TXT')
+    strato.add_txt_record("subdomain", "TXT", "myvalue")
+    strato.remove_txt_record("subdomain", "TXT")
 
     assert len(strato.records) == 0
 

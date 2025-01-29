@@ -1,4 +1,6 @@
 strato-auth.json
 venv
+.venv
 certbot.env
 __pycache__
+*.egg-info
