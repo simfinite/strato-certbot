@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from certbotstratoapi import CertbotStratoApi
+from strato_certbot.certbotstratoapi import CertbotStratoApi
 
 
 @pytest.fixture(autouse=True)
