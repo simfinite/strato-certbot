@@ -3,14 +3,21 @@ Wildcard certificates for strato.de
 
 ## Install
 
-Installation via package mangager (pip, pipx, uv) is optional but supported.
-Make sure to install to an environment owned or known to the root user, as 
-certbot running with root privileges will have to find and call the hook 
-scripts provided in this project,
-e.g. `sudo pipx install git+https://https://github.com/Buxdehuda/strato-certbot`.
+### Install dependencies globally
 
-If running the scripts directly from the cloned repository, dependencies can be
-installed easiest using the `uv` package manager: `uv pip install -r pyproject.toml`
+The hook scripts provided by this project can be directly executed from the cloned repository. In this case, dependencies specified in the `pyproject.toml` must be globally installed, which can be easiest achieved using the `uv` package manager: `sudo uv pip install -r pyproject.toml`.
+
+### Install as package via pipx
+
+If global installation of dependencies is not an option (e.g. recent Ubuntu versions), installation via `pipx` into a dedicated virtual environment is recommended. As certbot is run from a cron job with root privileges, the hook scripts provided by this project must be globally available. This can be achieved with pipx by setting `PIPX_HOME` and `PIPX_BIN_DIR`:
+```
+sudo PIPX_HOME=/opt/pipx PIPX_BIN_DIR=/usr/local/bin pipx install --force git+https://https://github.com/Buxdehuda/strato-certbot
+```
+
+This install all dependencies into a dedicated virtual environment within `/opt/pipx` and making the hook scripts available via entry points `strato-auth-hook` and `strato-cleanup-hook`.
+
+Add the `--force` option for upgrading to the latest version.
+
 
 ## Setup
 
@@ -65,11 +72,12 @@ Sometimes it takes a while until the desired DNS record is published, which allo
 
 Run Certbot in manual mode with the hook scripts automating the process.
 
-If installed as a package via pip/pipx/uv, the path to the `strato_auth.json`
-must be specified, e.g. via a variable `STRATO_AUTH_PATH`:
+If installed as a package via pipx, the path to the `strato_auth.json` must be specified, e.g. via a variable `STRATO_AUTH_PATH`:
 ```shell
 sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "strato-auth-hook $STRATO_AUTH_PATH" --manual-cleanup-hook "strato-cleanup-hook $STRATO_AUTH_PATH" -d example.com -d *.example.com
 ```
+
+sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "strato-auth-hook strato_auth.json" --manual-cleanup-hook "strato-cleanup-hook strato_auth.json" -d simfinite.de -d *.simfinite.de --dry-run
 
 If running directly from a cloned repository where the `strato_auth.json` was 
 placed:
@@ -101,3 +109,18 @@ Run `./run.sh`
 ### Get certificates
 
 A docker volume named "letsencrypt" will be created, the certificates can be found there ( `docker volume inspect letsencrypt` )
+
+
+## Development Hints
+
+Use certbot's `--dry-run` option to test the whole process without acquiring an actual valid certificate:
+
+```
+sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "strato-auth-hook $STRATO_AUTH_PATH" --manual-cleanup-hook "strato-cleanup-hook $STRATO_AUTH_PATH" -d <MY_DOMAIN> -d *.<MY_DOMAIN> --dry-run
+```
+
+Test the hook scripts separately:
+```
+CERTBOT_DOMAIN=<MY_DOMAIN> CERTBOT_VALIDATION=test_value strato_certbot/auth_hook.py
+CERTBOT_DOMAIN=<MY_DOMAIN> CERTBOT_VALIDATION=test_value strato_certbot/cleanup_hook.py
+```
