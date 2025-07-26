@@ -72,17 +72,16 @@ Sometimes it takes a while until the desired DNS record is published, which allo
 
 Run Certbot in manual mode with the hook scripts automating the process.
 
-If installed as a package via pipx, the path to the `strato_auth.json` must be specified, e.g. via a variable `STRATO_AUTH_PATH`:
+An absolute path to the `strato_auth.json` must be specified as argument to the hook scripts, e.g. via a variable `STRATO_AUTH_PATH`.
+
+If installed as a package via pipx, the hook scripts are globally available:
 ```shell
 sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "strato-auth-hook $STRATO_AUTH_PATH" --manual-cleanup-hook "strato-cleanup-hook $STRATO_AUTH_PATH" -d example.com -d *.example.com
 ```
 
-sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "strato-auth-hook strato_auth.json" --manual-cleanup-hook "strato-cleanup-hook strato_auth.json" -d simfinite.de -d *.simfinite.de --dry-run
-
-If running directly from a cloned repository where the `strato_auth.json` was 
-placed:
+If running directly from a cloned repository, the absolute paths to the hook scripts must be specified:
 ```shell
-sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "$(pwd)/strato_certbot/auth_hook.py strato-auth.json" --manual-cleanup-hook "$(pwd)/strato_certbot/cleanup_hook.py strato-auth.json" -d example.com -d *.example.com
+sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "$(pwd)/strato_certbot/auth_hook.py $STRATO_AUTH_PATH" --manual-cleanup-hook "$(pwd)/strato_certbot/cleanup_hook.py $STRATO_AUTH_PATH" -d example.com -d *.example.com
 ```
 
 This will generate a wildcard certificate for your domain without the need to manually enter the TXT records.
@@ -115,12 +114,12 @@ A docker volume named "letsencrypt" will be created, the certificates can be fou
 
 Use certbot's `--dry-run` option to test the whole process without acquiring an actual valid certificate:
 
-```
-sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "strato-auth-hook $STRATO_AUTH_PATH" --manual-cleanup-hook "strato-cleanup-hook $STRATO_AUTH_PATH" -d <MY_DOMAIN> -d *.<MY_DOMAIN> --dry-run
+```shell
+sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "strato-auth-hook $STRATO_AUTH_PATH" --manual-cleanup-hook "strato-cleanup-hook $STRATO_AUTH_PATH" -d example.com -d *.example.com --dry-run
 ```
 
 Test the hook scripts separately:
-```
-CERTBOT_DOMAIN=<MY_DOMAIN> CERTBOT_VALIDATION=test_value strato_certbot/auth_hook.py
-CERTBOT_DOMAIN=<MY_DOMAIN> CERTBOT_VALIDATION=test_value strato_certbot/cleanup_hook.py
+```shell
+CERTBOT_DOMAIN=example.com CERTBOT_VALIDATION=test_value strato_certbot/auth_hook.py
+CERTBOT_DOMAIN=example.com CERTBOT_VALIDATION=test_value strato_certbot/cleanup_hook.py
 ```

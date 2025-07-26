@@ -31,15 +31,9 @@ def main():
             auth_path = sys.argv[1]
 
         if not os.path.exists(auth_path):
-            local_auth_path = os.path.dirname(__file__) + os.path.normcase(
-                "/" + auth_path
+            raise FileNotFoundError(
+                f"Authentication file not found: {auth_path}. Please provide a valid path."
             )
-            if os.path.exists(local_auth_path):
-                auth_path = local_auth_path
-            else:
-                raise FileNotFoundError(
-                    f"Authentication file not found: {auth_path}. Please provide a valid path (global or relative to strato-certbot hook scripts)."
-                )
         with open(auth_path, encoding="UTF-8") as file:
             auth = json.load(file)
             username = auth.get("username")
