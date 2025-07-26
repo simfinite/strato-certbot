@@ -219,11 +219,17 @@ class CertbotStratoApi:
                 raise AttributeError('Element for record attribute "prefix" not found')
             prefix = prefix_element.attrs["value"]
 
-            type_element = recordElement.select_one("select[name='type'] option[selected]")
-            if type_element is None:
-                raise AttributeError('Element for record attribute "type" not found')
-            type = type_element.text
-            if not type in ["TXT", "CNAME"]:
+            try:
+                type_element = recordElement.select_one("select[name='type'] option[selected]")
+                type = type_element.text
+            except AttributeError:
+                try:
+                    type_select = recordElement.select_one("select[name='type']")
+                    type = type_select.get("value", type_select.find("option").get("value"))
+                except AttributeError:
+                    raise AttributeError('Element for record attribute "type" not found')
+
+            if type not in ["TXT", "CNAME"]:
                 raise TypeError(f'Attribute "type" with value "{type}" must be a value of: TXT, CNAME')
 
             value_element = recordElement.select_one("textarea[name='value']")
