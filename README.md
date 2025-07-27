@@ -120,6 +120,6 @@ sudo certbot certonly --manual --preferred-challenges dns --manual-auth-hook "st
 
 Test the hook scripts separately:
 ```shell
-CERTBOT_DOMAIN=example.com CERTBOT_VALIDATION=test_value strato_certbot/auth_hook.py
-CERTBOT_DOMAIN=example.com CERTBOT_VALIDATION=test_value strato_certbot/cleanup_hook.py
+CERTBOT_DOMAIN=example.com CERTBOT_VALIDATION=test_value strato_certbot/auth_hook.py $STRATO_AUTH_PATH
+CERTBOT_DOMAIN=example.com CERTBOT_VALIDATION=test_value strato_certbot/cleanup_hook.py $STRATO_AUTH_PATH
 ```

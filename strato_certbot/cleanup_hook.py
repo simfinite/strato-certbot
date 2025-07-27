@@ -17,17 +17,16 @@ def main():
         totp_devicename = os.environ.get("STRATO_TOTP_DEVICENAME")
         api_url = os.environ.get("STRATO_API_URL")
     else:
-        # if argument exists, use it as path to strato-auth.json
-        if len(sys.argv) != 2:
-            print("No path to strato-auth.json provided. Using default.")
-            auth_path = "strato-auth.json"
-        else:
-            auth_path = sys.argv[1]
-
+        # Retrieve path to authentication file from command line argument
+        if len(sys.argv) < 2:
+            raise RuntimeError(
+                "Authentication file path not provided. Please provide the path as a command line argument.")
+        auth_path = sys.argv[1]
         if not os.path.exists(auth_path):
             raise FileNotFoundError(
                 f"Authentication file not found: {auth_path}. Please provide a valid path."
             )
+        # Open and read the authentication file
         with open(auth_path, encoding="UTF-8") as file:
             auth = json.load(file)
             username = auth.get("username")
